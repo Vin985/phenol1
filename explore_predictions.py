@@ -30,12 +30,11 @@ events_dir = res_dir / "events"
 pred_files = preds_root.glob("*.feather")
 
 default_opts = {
-    "event_threshold": 0.5,
-    "method": "citynet",
+    "method": "standard",
     # "method": "standard",
     "activity_threshold": 0.9,
     "min_duration": 0.1,
-    "end_threshold": 0.3,
+    "end_threshold": 0.5,
     "recording_info_type": "audiomoth2019",
 }
 
@@ -95,10 +94,11 @@ for pred_file in pred_files:
         errors.append(create_error(year, site, plot_name, "No deployment end provided"))
     opts["plot"] = plot_name
 
-    events_file = (
-        events_dir
-        / f"{year}_{site}-{plot}_{opts['method']}_{opts['activity_threshold']}_events.feather"
-    )
+    method_id = f"{opts['method']}_{opts['activity_threshold']}"
+    if opts["method"] == "standard":
+        method_id += f"_{opts['end_threshold']}"
+
+    events_file = events_dir / f"{year}_{site}-{plot}_{method_id}_events.feather"
 
     if events_file.exists():
         events = pd.read_feather(events_file)
@@ -172,14 +172,22 @@ for pred_file in pred_files:
         # plots.append(plt_norm)
 
     else:
-        print("No events detected for {}".format(plot["name"]))
+        print("No events detected for {}".format(plot_name))
 
-save_as_pdf_pages(plts, res_dir / "all_plots.pdf")
+save_as_pdf_pages(
+    plts,
+    res_dir
+    / f'{default_opts["method"]}_{default_opts["activity_threshold"]}_all_plots.pdf',
+)
 
 agg_plts_dfs = {key: pd.concat(value) for key, value in agg_plts.items()}
 
 for key, value in agg_plts_dfs.items():
-    value.to_csv(res_dir / f"{key}_agg_trends.csv")
+    value.to_csv(
+        res_dir
+        / f'{key}_agg_trends_{default_opts["method"]}_{default_opts["activity_threshold"]}.csv',
+        index=False,
+    )
     # aplt = (
     #     ggplot(
     #         data=value,
@@ -200,7 +208,9 @@ errors_df.to_csv(res_dir / "errors.csv")
 
 #%%
 
-for agg_file in res_dir.glob("*agg_trends.csv"):
+for agg_file in res_dir.glob(
+    f'*agg_trends_{default_opts["method"]}_{default_opts["activity_threshold"]}.csv'
+):
     year = agg_file.stem.split("_")[0]
     df = pd.read_csv(agg_file)
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
@@ -254,4 +264,8 @@ for agg_file in res_dir.glob("*agg_trends.csv"):
         )
         single_plots.append(aplt)
 
-    save_as_pdf_pages(single_plots, res_dir / f"single_plots_{year}.pdf")
+    save_as_pdf_pages(
+        single_plots,
+        res_dir
+        / f'single_plots_{year}_{default_opts["method"]}_{default_opts["activity_threshold"]}.pdf',
+    )
