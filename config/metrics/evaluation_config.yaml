@@ -1,0 +1,76 @@
+
+data_config: "config/metrics/evaluation_data_config.yaml"
+save_results: True #True
+
+
+###########
+## Paths ##
+###########
+predictions_dir: "results/metrics/predictions"
+evaluation_dir: "results/metrics/evaluation"
+models_options:
+  spectrogram_overlap: 0.95
+  smooth_predictions: True
+  # repredict: True
+  # A: 0.05
+
+evaluators_options:
+  # draw_plots: True
+  draw_global_plots: False
+  plots: ["distances", "pr_curve", "roc", "separate_distances"] #"separate_distances", "roc"
+  phenology_databases: ["full_summer1", "ENAB"]
+
+
+id: metrics_standard
+
+evaluators:
+  - type: "phenology"
+    method: standard
+    scenarios:
+      activity_threshold:
+        start: 0.5
+        end: 0.99
+        step: 0.05
+      end_threshold:
+        start: 0.05
+        end: 0.6
+        step: 0.05
+      min_duration:
+        start: 0.05
+        end: 0.5
+        step: 0.05
+    daily_aggregation: "sum"
+
+
+models_list_dir:  "../dlbd/resources/models"
+
+models_list_options:
+  model_dir:  "../dlbd/resources/models"
+  ignore_parent_path: True
+  batch_size: 64
+  scenarios:
+    spectrogram_overlap: 0.95
+
+databases_options:
+  class_type: "biotic"
+  spectrogram:
+    n_mels: 32
+    n_fft: 512
+    sample_rate: "original"
+
+# models_list_dir: "../resources/models"
+
+# models_list_options:
+#   model_dir: "../resources/models"
+#   ignore_parent_path: True
+#   batch_size: 64
+#   reclassify: True
+#   scenarios:
+#     spectrogram_overlap: 0.95
+
+model_ids:
+  - DLBD
+
+
+databases:
+  - name: full_summer1
