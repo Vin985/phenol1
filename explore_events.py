@@ -4,14 +4,12 @@
 # Plots with less than 20 days of recording are not considered                                 ##
 #################################################################################################
 
-
+#%%
 import sys
-import random
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-import shutil
 from mouffet.utils import common_utils, file_utils
 from pandas_path import path
 from pysoundplayer.audio import Audio
@@ -74,7 +72,7 @@ event_files = events_dir.glob(f"*_{method_id}_*.feather")
 site_data["depl_start"] = pd.to_datetime(site_data["depl_start"], format="%d-%m-%Y")
 site_data["depl_end"] = pd.to_datetime(site_data["depl_end"], format="%d-%m-%Y")
 
-
+#%%
 current_module = sys.modules[__name__]
 res = []
 for event_file in event_files:

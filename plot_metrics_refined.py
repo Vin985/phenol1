@@ -23,7 +23,9 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 
 #%%
 
-stats = pd.read_csv("results/metrics/evaluation/gpu_metrics_standard_stats.csv")
+stats = pd.read_csv(
+    "results/metrics/evaluation/20230214/162323_metrics_standard_refined_stats.csv"
+)
 
 
 def extract_option(x, opt_name):
@@ -52,13 +54,11 @@ plt = (
         stats, mapping=aes(x="activity_threshold", y="f1_score", color="end_threshold")
     )
     + geom_point()
-    + facet_wrap("~min_duration")
     # + geom_point(mapping=aes(y="eucl_distance"), color="red")
 )
-print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/f1_score_standard_metrics_plot.png", is_file=True
+        "results/plots/metrics/f1_score_standard_metrics_refined_plot.png", is_file=True
     ),
     width=10,
     height=10,
@@ -71,13 +71,11 @@ plt = (
         mapping=aes(x="activity_threshold", y="eucl_distance", color="end_threshold"),
     )
     + geom_point()
-    + facet_wrap("~min_duration")
     # + geom_point(mapping=aes(y="eucl_distance"), color="red")
 )
-print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/eucl_distance_score_standard_metrics_plot.png",
+        "results/plots/metrics/eucl_distance_score_standard_metrics_refined_plot.png",
         is_file=True,
     ),
     width=10,
@@ -92,13 +90,11 @@ plt = (
         ),
     )
     + geom_point()
-    + facet_wrap("~min_duration")
     # + geom_point(mapping=aes(y="eucl_distance"), color="red")
 )
-print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/eucl_distance_norm_standard_metrics_plot.png",
+        "results/plots/metrics/eucl_distance_norm_standard_metrics_refined_plot.png",
         is_file=True,
     ),
     width=10,
@@ -111,13 +107,11 @@ plt = (
         mapping=aes(x="activity_threshold", y="IoU", color="end_threshold"),
     )
     + geom_point()
-    + facet_wrap("~min_duration")
     # + geom_point(mapping=aes(y="eucl_distance"), color="red")
 )
-print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/IoU_standard_metrics_plot.png",
+        "results/plots/metrics/IoU_standard_metrics_refined_plot.png",
         is_file=True,
     ),
     width=10,
@@ -125,41 +119,3 @@ plt.save(
 )
 
 #%%
-
-plt = (
-    ggplot(stats, mapping=aes(x="eucl_distance_norm"))
-    + geom_point(mapping=aes(y="f1_score"), color="blue")
-    # + geom_point(mapping=aes(y="eucl_distance"), color="red")
-)
-print(plt)
-
-plt = (
-    ggplot(stats, mapping=aes(x="eucl_distance"))
-    + geom_point(mapping=aes(y="f1_score"), color="red")
-    # + geom_point(mapping=aes(y="eucl_distance"), color="red")
-)
-print(plt)
-
-plt = (
-    ggplot(stats, mapping=aes(x="precision"))
-    + geom_point(mapping=aes(y="f1_score"), color="red")
-    # + geom_point(mapping=aes(y="eucl_distance"), color="red")
-)
-print(plt)
-
-plt = (
-    ggplot(stats, mapping=aes(x="IoU"))
-    + geom_point(mapping=aes(y="f1_score"), color="red")
-    # + geom_point(mapping=aes(y="eucl_distance"), color="red")
-)
-print(plt)
-
-plt = (
-    ggplot(stats, mapping=aes(x="activity_threshold"))
-    + geom_point(mapping=aes(y="f1_score"), color="blue")
-    # + geom_point(mapping=aes(y="eucl_distance_norm"), color="green")
-    + geom_point(mapping=aes(y="precision"), color="black")
-    + geom_point(mapping=aes(y="IoU"), color="orange")
-    + geom_point(mapping=aes(y="eucl_distance"), color="red")
-)
-print(plt)

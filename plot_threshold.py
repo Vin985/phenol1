@@ -1,3 +1,4 @@
+#%%
 import traceback
 from pathlib import Path
 
@@ -37,21 +38,26 @@ trend = "trend"
 site_data = pd.read_csv(
     "/mnt/win/UMoncton/Doctorat/data/acoustic/deployment data/sites_deployment_all.csv"
 )
-site_data["depl_start"] = pd.to_datetime(site_data["depl_start"], format="%d-%m-%Y")
-site_data["depl_end"] = pd.to_datetime(site_data["depl_end"], format="%d-%m-%Y")
+site_data["depl_start"] = (
+    pd.to_datetime(site_data["depl_start"], format="%d-%m-%Y")
+    # + pd.tseries.offsets.Day()
+)
+site_data["depl_end"] = pd.to_datetime(
+    site_data["depl_end"], format="%d-%m-%Y"
+)  # - pd.tseries.offsets.Day()
 
-
+#%%
 res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results")
 events_dir = res_dir / "events"
-plot_dir = res_dir / "plots"
+plot_dir = res_dir / "plots" / "thresholds"
 
 
 opts = {
-    "method": "standard",
-    # "method": "standard",
+    # "method": "direct",
+    "method": "direct",
     "activity_threshold": 0.9,
     "min_duration": 0.1,
-    "end_threshold": 0.35,
+    "end_threshold": 0.55,
     "daily_aggregation": "sum",
     "recording_info_type": "audiomoth2019",
 }
@@ -116,11 +122,11 @@ for t in thresholds:
     res.append(df)
 
 res_df = pd.concat(res)
+res_df = res_df.astype({"threshold": "category"})
 
 #%%
 
 
-res_df = res_df.astype({"threshold": "category"})
 gb = res_df.groupby("date")
 df_mean = gb.apply("mean").reset_index()
 df_sd = gb.apply("std").reset_index()
@@ -143,7 +149,33 @@ plt = (
     + theme_classic()
     + theme(axis_text_x=element_text(angle=45))
 ).save(
-    plot_dir / f"{plot_name}_{year}_various_thresholds_sum2.png",
+    file_utils.ensure_path_exists(
+        plot_dir
+        / f"{plot_name}_{year}_{opts['method']}_thresh{opts['activity_threshold']}_end{opts['end_threshold']}_nooff.png",
+        is_file=True,
+    ),
+    width=12,
+    height=7,
+)
+
+plt
+#%%
+
+plt = (
+    ggplot()
+    + geom_line(data=res_df, mapping=aes("date", "trend_norm", colour="threshold"))
+    + ggtitle(f"Daily mean acoustic activity per recording for {site}_{plot} in {year}")
+    + xlab("Date")
+    + ylab("Daily mean activity per recording (s)")
+    + scale_x_datetime(labels=format_date_short)
+    + theme_classic()
+    + theme(axis_text_x=element_text(angle=45))
+).save(
+    file_utils.ensure_path_exists(
+        plot_dir
+        / f"{plot_name}_{year}_norm_{opts['method']}_thresh{opts['activity_threshold']}_end{opts['end_threshold']}_nooff.png",
+        is_file=True,
+    ),
     width=12,
     height=7,
 )
