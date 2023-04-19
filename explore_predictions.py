@@ -12,9 +12,11 @@ from pandas_path import path  # pylint: disable=unused-import
 from plotnine import *
 
 EVALUATORS.register_evaluator(PhenologyEvaluator)
-preds_root = Path(
-    "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Results/predictions"
-)
+# preds_root = Path(
+#     "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Results/predictions"
+# )
+
+preds_root = Path("/home/vin/Desktop/results/preds_v2")
 
 
 site_data = pd.read_csv(
@@ -24,17 +26,25 @@ site_data["depl_start"] = pd.to_datetime(site_data["depl_start"], format="%d-%m-
 site_data["depl_end"] = pd.to_datetime(site_data["depl_end"], format="%d-%m-%Y")
 
 
-res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results")
+res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
 events_dir = res_dir / "events"
 
-pred_files = preds_root.glob("*.feather")
+pred_files = list(preds_root.glob("*.feather"))
+pred_files.sort()
+
+#%%
+
 
 default_opts = {
-    "method": "standard",
+    "method": "direct",
     # "method": "standard",
-    "activity_threshold": 0.9,
-    "min_duration": 0.1,
+    "activity_threshold": 0.75,
+    # "activity_threshold": 0.9,
+    "min_duration": 0.4,
     "end_threshold": 0.5,
+    "dtc_threshold": 0,
+    "gtc_threshold": 0,
+    "smooth_predictions": True,
     "recording_info_type": "audiomoth2019",
 }
 
@@ -47,6 +57,12 @@ def create_error(year, site, plot, error, file_name=""):
     msg = f"{error} for {plot} in {year}"
     common_utils.print_warning(msg)
     return {"year": year, "site": site, "plot": plot, "error": error, "file": file_name}
+
+
+def smooth_predictions(preds, factor=3):
+    roll = preds["activity"].rolling(factor, center=True)
+    preds.loc[:, "activity"] = roll.mean()
+    return preds
 
 
 #%%
@@ -105,6 +121,8 @@ for pred_file in pred_files:
     else:
         preds = pd.read_feather(pred_file)
         preds = preds.rename(columns={"recording_path": "recording_id"})
+        if opts.get("smooth_predictions", True):
+            preds = smooth_predictions(preds, opts.get("smooth_factor", 3))
         try:
             events = EVALUATORS[opts["method"]].filter_predictions(preds, opts)
         except IndexError:

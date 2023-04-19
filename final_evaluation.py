@@ -23,7 +23,7 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 
 models_dir = "resources/models"
 
-evaluation_config_path = "config/metrics_v2_plots/evaluation_config.yaml"
+evaluation_config_path = "config/final_evaluation/evaluation_config.yaml"
 
 evaluation_config = file_utils.load_config(evaluation_config_path)
 

@@ -5,9 +5,14 @@ from sklearn import metrics
 from plotnine import *
 import numpy as np
 
+# pr_df = pd.read_csv(
+#     "results/metrics/evaluation/20230330/154703_metrics_standard_pr_curve_stats.csv"
+# )
+
 pr_df = pd.read_csv(
-    "results/metrics/evaluation/20230330/154703_metrics_standard_pr_curve_stats.csv"
+    "/mnt/win/UMoncton/Doctorat/dev/phenol1/results/metrics_v2/evaluation/20230417/134726_metrics_standard_pr_curve_v2_stats.csv"
 )
+
 pr_df = pr_df.loc[pr_df.recall < 0.988]
 pr_df = pr_df.append([{"precision": 1, "recall": 0}], ignore_index=True)
 pr_df = pr_df.loc[:, ["precision", "recall"]].sort_values("precision")

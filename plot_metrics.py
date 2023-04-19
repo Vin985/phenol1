@@ -23,7 +23,11 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 
 #%%
 
-stats = pd.read_csv("results/metrics/evaluation/gpu_metrics_standard_stats.csv")
+# stats = pd.read_csv("results/metrics/evaluation/gpu_metrics_standard_stats.csv")
+
+stats = pd.read_csv(
+    "/mnt/win/UMoncton/Doctorat/dev/phenol1/results/metrics_v2/evaluation/20230417/134726_metrics_standard_pr_curve_v2_stats.csv"
+)
 
 
 def extract_option(x, opt_name):
@@ -58,7 +62,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/f1_score_standard_metrics_plot.png", is_file=True
+        "results/plots/metrics_v2/f1_score_standard_metrics_plot.png", is_file=True
     ),
     width=10,
     height=10,
@@ -77,7 +81,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/eucl_distance_score_standard_metrics_plot.png",
+        "results/plots/metrics_v2/eucl_distance_score_standard_metrics_plot.png",
         is_file=True,
     ),
     width=10,
@@ -98,7 +102,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/eucl_distance_norm_standard_metrics_plot.png",
+        "results/plots/metrics_v2/eucl_distance_norm_standard_metrics_plot.png",
         is_file=True,
     ),
     width=10,
@@ -117,7 +121,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics/IoU_standard_metrics_plot.png",
+        "results/plots/metrics_v2/IoU_standard_metrics_plot.png",
         is_file=True,
     ),
     width=10,

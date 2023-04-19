@@ -1,16 +1,17 @@
 
-data_config: "config/metrics/evaluation_data_config.yaml"
+data_config: "config/metrics_v2/evaluation_data_config.yaml"
 save_results: True #True
 
 
 ###########
 ## Paths ##
 ###########
-predictions_dir: "results/metrics/predictions"
-evaluation_dir: "results/metrics/evaluation"
+predictions_dir: "results/metrics_v2/predictions"
+evaluation_dir: "results/metrics_v2/evaluation"
 models_options:
   spectrogram_overlap: 0.75
   smooth_predictions: True
+  input_height: 32
   # repredict: True
   # A: 0.05
 
@@ -64,10 +65,10 @@ evaluators:
       daily_aggregation: "sum"
 
 
-models_list_dir:  "../dlbd/resources/models"
+models_list_dir:  "resources/models"
 
 models_list_options:
-  model_dir:  "../dlbd/resources/models"
+  model_dir:  "resources/models"
   ignore_parent_path: True
   batch_size: 64
 
@@ -89,7 +90,7 @@ databases_options:
 #     spectrogram_overlap: 0.95
 
 model_ids:
-  - DLBD
+  - DLBD_v2
 
 
 databases:
