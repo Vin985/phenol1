@@ -16,11 +16,21 @@ from pysoundplayer.audio import Audio
 
 res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
 events_dir = res_dir / "events"
-hd_root = "/media/vin/Backup/PhD/Acoustics/"
-dest_dir = "/media/vin/Backup/events/"
+
 site_data = pd.read_csv(
     "/mnt/win/UMoncton/Doctorat/data/acoustic/deployment data/sites_deployment_all.csv"
 )
+
+
+get_audio = False
+
+hd_root = "/mnt/Backup/PhD/Acoustics/"
+dest_dir = res_dir / "events_to_explore"
+
+dest_event_file = file_utils.ensure_path_exists(
+    dest_dir / "events_to_explore.csv", is_file=True
+)
+
 nfiles = 20
 overwrite = False
 min_recordings_required = 960  # min 20 days of recording
@@ -29,9 +39,8 @@ overwrite = False
 
 opts = {
     "method": "standard",
-    # "method": "standard",
     "activity_threshold": 0.9,
-    "min_duration": 0.1,
+    "min_duration": 0.4,
     "end_threshold": 0.5,
 }
 
@@ -41,6 +50,7 @@ if opts["method"] == "standard":
 
 TOTAL_DURATION = 600
 PADDING_DURATION = 0.5
+N_FILES = 300
 
 
 def extract_recording_info_2019(df):
@@ -67,53 +77,67 @@ def extract_recording_info_2018(df):
     return df
 
 
-event_files = events_dir.glob(f"*_{method_id}_*.feather")
-
-site_data["depl_start"] = pd.to_datetime(site_data["depl_start"], format="%d-%m-%Y")
-site_data["depl_end"] = pd.to_datetime(site_data["depl_end"], format="%d-%m-%Y")
-
 #%%
-current_module = sys.modules[__name__]
-res = []
-for event_file in event_files:
-    print(f"Processing {event_file}")
-    df = pd.read_feather(event_file)
-    if len(df.recording_id.unique()) < min_recordings_required:
-        common_utils.print_warning("Not enough recordings found, skipping")
-        continue
 
-    splits = df.iloc[0].recording_id.split("/")
-    year = int(splits[-4])
-    site = splits[-3]
-    plot = splits[-2]
+if dest_event_file.exists():
 
-    tmp_year = 2019 if year >= 2019 else year
-    func_name = "extract_recording_info_" + str(tmp_year)
-    df = getattr(current_module, func_name)(df)
+    mixed = pd.read_csv(dest_event_file)
 
-    site_info = site_data.loc[
-        (site_data.year == year) & (site_data["plot"] == plot),
-    ].iloc[0]
-    if not pd.isnull(site_info["depl_start"]):
-        df = df.loc[df.date_hour >= site_info["depl_start"]]
-    if not pd.isnull(site_info["depl_end"]):
-        df = df.loc[df.date_hour <= site_info["depl_end"]]
+else:
 
-    mixed = df.sample(n=min(1000, df.shape[0]), random_state=seed)
-    mixed.recording_id = mixed.recording_id.str.replace("/mnt", "/media/vin/Backup")
-    mixed["year"] = year
-    mixed["site"] = site
-    mixed["plot"] = plot
+    event_files = events_dir.glob(f"*_{method_id}_*.feather")
+
+    site_data["depl_start"] = pd.to_datetime(site_data["depl_start"], format="%d-%m-%Y")
+    site_data["depl_end"] = pd.to_datetime(site_data["depl_end"], format="%d-%m-%Y")
+
+    current_module = sys.modules[__name__]
+    res = []
+    all_events = []
+    for event_file in event_files:
+        print(f"Processing {event_file}")
+        df = pd.read_feather(event_file)
+        if len(df.recording_id.unique()) < min_recordings_required:
+            common_utils.print_warning("Not enough recordings found, skipping")
+            continue
+
+        splits = df.iloc[0].recording_id.split("/")
+        year = int(splits[-4])
+        site = splits[-3]
+        plot = splits[-2]
+
+        tmp_year = 2019 if year >= 2019 else year
+        func_name = "extract_recording_info_" + str(tmp_year)
+        df = getattr(current_module, func_name)(df)
+
+        site_info = site_data.loc[
+            (site_data.year == year) & (site_data["plot"] == plot),
+        ].iloc[0]
+        if not pd.isnull(site_info["depl_start"]):
+            df = df.loc[df.date_hour >= site_info["depl_start"]]
+        if not pd.isnull(site_info["depl_end"]):
+            df = df.loc[df.date_hour <= site_info["depl_end"]]
+
+        df["year"] = year
+        df["site"] = site
+        df["plot"] = plot
+
+        all_events.append(df)
+
+    all_events_df = pd.concat(all_events)
+
+    mixed = all_events_df.sample(n=min(N_FILES, df.shape[0]), random_state=seed)
+    mixed.reset_index().to_csv(dest_event_file, index=False)
+
+
+if get_audio:
+    # mixed.recording_id = mixed.recording_id.str.replace("/mnt", "/media/vin/Backup")
 
     extract_nb = 1
-    total_dur = 0
     tmp_res = []
     for event in mixed.itertuples():
-        print(
-            f"{year}, {plot}: Processing extract {extract_nb} with total duration {round(total_dur)}"
-        )
+        print(f"{year}, {plot}: Processing extract in recording {event.recording_id}")
         tmp = event._asdict()
-        dest_path = Path(event.recording_id.replace(hd_root, dest_dir))
+
         # file_name = dest_path.stem
         # if event.year == "2018":
         #     dt = datetime.fromtimestamp(int(file_name, 16))
@@ -123,7 +147,7 @@ for event_file in event_files:
         file_name = f"{event.date_hour.strftime('%Y%m%d_%H%M%S')}_{extract_nb}"
 
         dest_path = file_utils.ensure_path_exists(
-            dest_path.parent / (file_name + dest_path.suffix), is_file=True
+            dest_dir / (file_name + dest_path.suffix), is_file=True
         )
         if not dest_path.exists() or overwrite:
             audio = Audio(event.recording_id)
@@ -144,8 +168,8 @@ for event_file in event_files:
     tmp_df = pd.DataFrame(tmp_res)
     res.append(tmp_df.reset_index(drop=True))
 
-res_df = pd.concat(res)
-res_df.reset_index(drop=True).to_csv(dest_dir + "/files.csv")
+    res_df = pd.concat(res)
+    res_df.reset_index(drop=True).to_csv(dest_dir + "/files.csv")
 # tmp = (
 #     df.groupby("recording_id")
 #     .apply(file_event_duration)
@@ -170,3 +194,5 @@ res_df.reset_index(drop=True).to_csv(dest_dir + "/files.csv")
 #     year = 2019
 # func_name = "extract_recording_info_" + str(year)
 # tmp = getattr(current_module, func_name)(tmp)
+
+# %%

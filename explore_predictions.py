@@ -16,7 +16,7 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 #     "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Results/predictions"
 # )
 
-preds_root = Path("/home/vin/Desktop/results/preds_v2")
+preds_root = Path("/home/vin/Desktop/results/predictions_v2")
 
 
 site_data = pd.read_csv(
@@ -192,6 +192,8 @@ for pred_file in pred_files:
     else:
         print("No events detected for {}".format(plot_name))
 
+plts
+
 save_as_pdf_pages(
     plts,
     res_dir
@@ -263,13 +265,23 @@ for agg_file in res_dir.glob(
     # ).save(res_dir / f"trends_norm_{year}.png", width=20, height=16)
 
     single_plots = []
+    print(year)
+
+    df.type = df.type.astype("category")
+    print(df["site"].unique())
 
     for site in df["site"].unique():
-        tmp_df = df.loc[df.site == site]
+        # print(site)
+        tmp_df = df.loc[df.site == site].copy().reset_index()
+        tmp_df.type = tmp_df.type.astype("category")
+        tmp_df.type = tmp_df.type.cat.remove_unused_categories()
+        # print(tmp_df)
+        # print(tmp_df.dtypes)
+        # print(tmp_df.type)
         aplt = (
             ggplot(
                 data=tmp_df,
-                mapping=aes("date", "trend", color="type"),
+                mapping=aes(x="date", y="trend", color="type"),
             )
             + geom_line()
             # + geom_point(mapping=aes(y="total_duration"))
@@ -282,6 +294,7 @@ for agg_file in res_dir.glob(
         )
         single_plots.append(aplt)
 
+    print(single_plots)
     save_as_pdf_pages(
         single_plots,
         res_dir

@@ -1,8 +1,6 @@
 #%%
-import traceback
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from dlbd.applications.phenology import PhenologyEvaluator
 from dlbd.evaluation import EVALUATORS
@@ -11,28 +9,31 @@ from mouffet.utils import common_utils, file_utils
 from pandas_path import path  # pylint: disable=unused-import
 from plotnine import *
 
-from utils import format_date_short, read_trends
+from utils import format_date_short
 
 EVALUATORS.register_evaluator(PhenologyEvaluator)
-preds_root = Path(
-    "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Results/predictions"
-)
+# preds_root = Path(
+#     "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Results/predictions"
+# )
 
-site = "IGLO"
-plot = "B"
+
+preds_root = Path("/home/vin/Desktop/results/preds_v2")
+
+site = "BARW"
+plot = "0"
 plot_name = "_".join([site, plot])
 year = 2018
 
 
-file_name = f"{year}_{plot_name}_predictions_overlap-0.5.feather"
+file_name = f"{year}_{plot_name}_predictions_overlap-0.75.feather"
 
 
 text_size = 16
 title_size = 18
 legend_title_margin = {"b": 15}
-activity_threshold = 0.7
-method = "citynet"
-trend = "trend"
+# activity_threshold = 0.7
+# method = "citynet"
+# trend = "trend"
 
 
 site_data = pd.read_csv(
@@ -47,17 +48,17 @@ site_data["depl_end"] = pd.to_datetime(
 )  # - pd.tseries.offsets.Day()
 
 #%%
-res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results")
+res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
 events_dir = res_dir / "events"
 plot_dir = res_dir / "plots" / "thresholds"
 
 
 opts = {
     # "method": "direct",
-    "method": "direct",
+    "method": "standard",
     "activity_threshold": 0.9,
-    "min_duration": 0.1,
-    "end_threshold": 0.55,
+    "min_duration": 0.4,
+    "end_threshold": 0.5,
     "daily_aggregation": "sum",
     "recording_info_type": "audiomoth2019",
 }
