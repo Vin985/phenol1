@@ -44,6 +44,7 @@ databases:
   #* from data will be used
     - name: 'citynet_final'
       root_dir: '/mnt/win/UMoncton/Doctorat/data/dl_training/raw/CityNet'
+      data_by_type: True
       # spectrogram:
       #   sample_rate: 22050
       split:
