@@ -22,25 +22,36 @@ evaluators_options:
   phenology_databases: ["full_summer_final", "ENAB_final"]
 
 
-id: metrics_standard_final
+id: metrics_direct_positive_final
 
 evaluators:
+  # - type: "phenology"
+  #   method: standard
+  #   scenarios:
+  #     activity_threshold:
+  #       start: 0.5
+  #       end: 0.99
+  #       step: 0.01
+  #     end_threshold:
+  #       start: 0.1
+  #       end: 0.5
+  #       step: 0.1
+  #     min_duration:
+  #       start: 0.2
+  #       end: 0.4
+  #       step: 0.1
+  #     daily_aggregation: "sum"
   - type: "phenology"
-    method: standard
+    method: "direct"
     scenarios:
       activity_threshold:
-        start: 0.5
-        end: 0.99
-        step: 0.01
-      end_threshold:
         start: 0.1
-        end: 0.5
-        step: 0.1
-      min_duration:
-        start: 0.2
-        end: 0.4
-        step: 0.1
-      daily_aggregation: "sum"
+        end: 0.99
+        step: 0.03
+    # positive_only: True
+    only_positives: True
+      # remove_crows: [True, False]
+    daily_aggregation: "sum"
 
 
 models_list_dir:  "resources/models"
@@ -64,3 +75,4 @@ model_ids:
 
 databases:
   - name: full_summer_final
+  # - name: ENAB_final

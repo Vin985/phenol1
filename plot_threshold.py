@@ -54,8 +54,8 @@ plot_dir = res_dir / "plots" / "thresholds"
 
 
 opts = {
-    # "method": "direct",
-    "method": "standard",
+    "method": "direct",
+    # "method": "standard",
     "activity_threshold": 0.9,
     "min_duration": 0.4,
     "end_threshold": 0.5,
@@ -63,7 +63,7 @@ opts = {
     "recording_info_type": "audiomoth2019",
 }
 
-thresholds = common_utils.range_list(0.5, 0.99, 0.1)
+thresholds = common_utils.range_list(0.5, 0.99, 0.01)
 
 errors = []
 

@@ -22,7 +22,7 @@ evaluators_options:
   phenology_databases: ["full_summer1", "ENAB"]
 
 
-id: metrics_standard_pr_curve_v2
+id: metrics_standard_v2
 
 evaluators:
   # - type: "phenology"
@@ -57,11 +57,17 @@ evaluators:
     method: standard
     scenarios:
       activity_threshold:
-        start: 0.05
+        start: 0.5
         end: 0.99
-        step: 0.02
-      end_threshold: 0.5
-      min_duration: 0.4
+        step: 0.01
+      end_threshold:
+        start: 0.1
+        end: 0.5
+        step: 0.1
+      min_duration:
+        start: 0.1
+        end: 0.5
+        step: 0.4
       daily_aggregation: "sum"
 
 

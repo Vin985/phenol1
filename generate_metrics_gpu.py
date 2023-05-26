@@ -1,20 +1,12 @@
 #%%
 
-from pathlib import Path
-
-import mouffet.utils.file as file_utils
+from dlbd.applications.phenology.phenology_evaluator import PhenologyEvaluator
 from dlbd.data.audio_data_handler import AudioDataHandler
 from dlbd.evaluation import EVALUATORS
 from dlbd.evaluation.song_detector_evaluation_handler import (
     SongDetectorEvaluationHandler,
 )
-
-from dlbd.applications.phenology.phenology_evaluator import PhenologyEvaluator
-from dlbd.utils import get_models_conf
-
-import pandas as pd
-
-from plotnine import *
+from mouffet import config_utils, file_utils
 
 EVALUATORS.register_evaluator(PhenologyEvaluator)
 
@@ -29,7 +21,7 @@ evaluation_config = file_utils.load_config(evaluation_config_path)
 
 print(evaluation_config)
 
-evaluation_config = get_models_conf(
+evaluation_config = config_utils.get_models_conf(
     evaluation_config,
 )
 

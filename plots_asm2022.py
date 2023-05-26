@@ -5,15 +5,15 @@ from pathlib import Path
 import pandas as pd
 from plotnine import *
 
-src_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results")
+src_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
 # dest_dir = Path("/mnt/win/UMoncton/Doctorat/presentations/ArcticNet 2022/figs")
 dest_dir = src_dir / "plots"
 
 text_size = 16
 title_size = 18
 legend_title_margin = {"b": 15}
-activity_threshold = 0.7
-method = "citynet"
+activity_threshold = 0.75
+method = "direct"
 trend = "trend"
 
 

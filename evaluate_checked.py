@@ -6,8 +6,7 @@ from dlbd.evaluation import EVALUATORS
 from dlbd.evaluation.song_detector_evaluation_handler import (
     SongDetectorEvaluationHandler,
 )
-from dlbd.utils import get_models_conf
-from mouffet import common_utils
+from mouffet import common_utils, config_utils
 from mouffet.evaluation import Evaluator
 
 
@@ -102,7 +101,7 @@ evaluation_config = file_utils.load_config(evaluation_config_path)
 
 evaluation_config["models_list_dir"] = models_dir
 
-evaluation_config = get_models_conf(
+evaluation_config = config_utils.get_models_conf(
     evaluation_config,
 )
 

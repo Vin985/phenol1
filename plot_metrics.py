@@ -1,20 +1,11 @@
 #%%
 
-from pathlib import Path
 
-import mouffet.utils.file as file_utils
-from dlbd.data.audio_data_handler import AudioDataHandler
-from dlbd.evaluation import EVALUATORS
-from dlbd.evaluation.song_detector_evaluation_handler import (
-    SongDetectorEvaluationHandler,
-)
-
-from dlbd.applications.phenology.phenology_evaluator import PhenologyEvaluator
-from dlbd.utils import get_models_conf
-import ast
 import pandas as pd
-
-from plotnine import *
+from dlbd.applications.phenology.phenology_evaluator import PhenologyEvaluator
+from dlbd.evaluation import EVALUATORS
+from mouffet import config_utils, file_utils
+from plotnine import aes, facet_wrap, geom_point, ggplot
 
 EVALUATORS.register_evaluator(PhenologyEvaluator)
 
@@ -26,27 +17,25 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 # stats = pd.read_csv("results/metrics/evaluation/gpu_metrics_standard_stats.csv")
 
 stats = pd.read_csv(
-    "/mnt/win/UMoncton/Doctorat/dev/phenol1/results/metrics_v2/evaluation/20230417/134726_metrics_standard_pr_curve_v2_stats.csv"
+    "/mnt/win/UMoncton/Doctorat/dev/phenol1/results/metrics_v2/evaluation/20230417/134726_metrics_standard_v2_stats.csv"
 )
 
-
-def extract_option(x, opt_name):
-    return ast.literal_eval(x).get(opt_name, "")
+dest_dir = "results/plots/metrics_v2/global/"
 
 
 if not "activity_threshold" in stats.columns:
     stats.loc[:, "activity_threshold"] = stats.evaluator_opts.apply(
-        extract_option, opt_name="activity_threshold"
+        config_utils.get_option, opt_name="activity_threshold"
     )
 
 if not "end_threshold" in stats.columns:
     stats.loc[:, "end_threshold"] = stats.evaluator_opts.apply(
-        extract_option, opt_name="end_threshold"
+        config_utils.get_option, opt_name="end_threshold"
     )
 
 if not "min_duration" in stats.columns:
     stats.loc[:, "min_duration"] = stats.evaluator_opts.apply(
-        extract_option, opt_name="min_duration"
+        config_utils.get_option, opt_name="min_duration"
     )
 
 #%%
@@ -62,7 +51,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics_v2/f1_score_standard_metrics_plot.png", is_file=True
+        dest_dir + "f1_score_standard_metrics_plot.png", is_file=True
     ),
     width=10,
     height=10,
@@ -81,7 +70,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics_v2/eucl_distance_score_standard_metrics_plot.png",
+        dest_dir + "eucl_distance_score_standard_metrics_plot.png",
         is_file=True,
     ),
     width=10,
@@ -102,7 +91,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics_v2/eucl_distance_norm_standard_metrics_plot.png",
+        dest_dir + "eucl_distance_norm_standard_metrics_plot.png",
         is_file=True,
     ),
     width=10,
@@ -121,7 +110,7 @@ plt = (
 print(plt)
 plt.save(
     file_utils.ensure_path_exists(
-        "results/plots/metrics_v2/IoU_standard_metrics_plot.png",
+        dest_dir + "IoU_standard_metrics_plot.png",
         is_file=True,
     ),
     width=10,

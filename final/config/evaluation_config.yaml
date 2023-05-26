@@ -19,62 +19,68 @@ models_options:
 evaluators_options:
   draw_plots: True
   draw_global_plots: True
-  plots: ["distances", "pr_curve", "roc"] #"separate_distances", "roc"
+  plots: ["distances", "pr_curve", "roc", "tag_repartition", "detected_tags", "overlap_duration", "overlap_duration_bar"] #"separate_distances", "roc"
   phenology_databases: ["full_summer_final", "ENAB_final"]
 
 
-id: final_evaluation
+id: final_evaluation_direct_positive
 
 evaluators:
   # - type: "phenology"
-  #   method: direct
+  #   method: "direct"
+  #   scenarios:
+  #     activity_threshold: [0.7, 0.75, 0.8, 0.85, 0.9]
+  #     time_buffer: [0.5, 1, 1.5]
+  # - type: phenology
+  #   method: "standard"
+  #   scenarios:
+  #     activity_threshold: [0.8, 0.85, .9 , .95]
+  #     end_threshold: [0.1, 0.5]
+  #     min_duration: [0.2, 0.4]
+  #     gtc_threshold: [0, .1, .3]
+  #     dtc_threshold: [0, .1, .3] 
+  #   daily_aggregation: "sum"
+
+  # - type: "phenology"
+  #   method: "direct"
+  #   scenarios:
+  #     activity_threshold: [0.7, 0.75, 0.8, 0.85, 0.9]
+  #     time_buffer: [0.5, 1, 1.5]
+  # - type: "phenology"
+  #   method: "direct"
   #   scenarios:
   #     activity_threshold:
-  #       start: 0.65
-  #       end: 0.8
-  #       step: 0.01
-  #   # end_threshold: 0.3
-  #   # min_duration: 0.4
-  #   # gtc_threshold: 0
-  #   # dtc_threshold: 0
+  #       start: 0.5
+  #       end: 0.99
+  #       step: 0.05
+  #     remove_crows: [True, False]
   #   daily_aggregation: "sum"
-  # - type: "phenology"
-  #   method: standard
-  #   activity_threshold: 0.94
-  #   end_threshold: 0.5
-  #   min_duration: 0.4
-  #   gtc_threshold: 0
-  #   dtc_threshold: 0
-  #   daily_aggregation: "sum"
-  # - type: "phenology"
-  #   method: standard
-  #   activity_threshold: 0.92
-  #   end_threshold: 0.5
-  #   min_duration: 0.4
-  #   gtc_threshold: 0
-  #   dtc_threshold: 0
-  #   daily_aggregation: "sum"
+  # - type: "direct"
+  #   activity_threshold: 0.75
   - type: "phenology"
     method: "direct"
-    scenarios:
-      activity_threshold: [0.7, 0.75, 0.8, 0.85, 0.9]
-  - type: phenology
-    method: "standard"
-    scenarios:
-      activity_threshold: [0.8, 0.85, .9 , .95]
-      end_threshold: [0.1, 0.2, 0.3, 0.5]
-      min_duration: [0.2, 0.4]
-    daily_aggregation: "sum"
-    gtc_threshold: 0
-    dtc_threshold: 0 
+    activity_threshold: 0.75
+    # scenarios:
+    #   activity_threshold: [0.6, 0.7, 0.75, 0.8]
+    #   only_positives: [False, True]
+
   # - type: "phenology"
-  #   method: standard
-  #   activity_threshold: 0.9
-  #   end_threshold: 0.5
-  #   min_duration: 0.4
+  #   method: "direct"
+  #   scenarios:
+  #     activity_threshold: [0.6, 0.7, 0.75, 0.8]
+  #     remove_crows: [True, False]
   #   daily_aggregation: "sum"
+
+  # - type: "standard"
+  #   activity_threshold: .9
+  #   end_threshold: 0.5
+  #   # scenarios:
+  #   #   end_threshold: [0.1, 0.2, 0.3, 0.5]
+  #   min_duration: 0.2
   #   gtc_threshold: 0
-  #   dtc_threshold: 0 
+  #   dtc_threshold: 0
+    
+      
 
 
 models_list_dir:  "/mnt/win/UMoncton/Doctorat/dev/phenol1/resources/models"
