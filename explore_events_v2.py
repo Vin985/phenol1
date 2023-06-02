@@ -153,8 +153,8 @@ if get_audio:
             audio = Audio(event.recording_id)
             audio.write(
                 dest_path,
-                start=event.event_start - PADDING_DURATION,
-                end=event.event_end + PADDING_DURATION,
+                start=max(0, event.event_start - PADDING_DURATION)
+                end=min(300, event.event_end + PADDING_DURATION),
                 seconds=True,
             )
         else:

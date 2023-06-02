@@ -5,7 +5,8 @@ from pathlib import Path
 import pandas as pd
 from plotnine import *
 
-src_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
+# src_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
+src_dir = Path("/mnt/win/UMoncton/Doctorat/results/predictions_v2")
 # dest_dir = Path("/mnt/win/UMoncton/Doctorat/presentations/ArcticNet 2022/figs")
 dest_dir = src_dir / "plots"
 

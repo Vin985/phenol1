@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from dlbd.applications.phenology import PhenologyEvaluator
 from dlbd.evaluation import EVALUATORS
-from dlbd.utils.plot_utils import format_date_short
+from dlbd.plots.utils import format_date_short
 from mouffet.utils import common_utils, file_utils
 from pandas_path import path  # pylint: disable=unused-import
 from plotnine import *
@@ -16,7 +16,7 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 #     "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Results/predictions"
 # )
 
-preds_root = Path("/home/vin/Desktop/results/predictions_v2")
+preds_root = Path("/mnt/win/UMoncton/Doctorat/results/predictions_v2")
 
 
 site_data = pd.read_csv(
@@ -281,7 +281,7 @@ for agg_file in res_dir.glob(
         aplt = (
             ggplot(
                 data=tmp_df,
-                mapping=aes(x="date", y="trend", color="type"),
+                mapping=aes(x="date", y="trend_norm", color="type"),
             )
             + geom_line()
             # + geom_point(mapping=aes(y="total_duration"))
@@ -294,9 +294,9 @@ for agg_file in res_dir.glob(
         )
         single_plots.append(aplt)
 
-    print(single_plots)
+    # print(single_plots)
     save_as_pdf_pages(
         single_plots,
         res_dir
-        / f'single_plots_{year}_{default_opts["method"]}_{default_opts["activity_threshold"]}.pdf',
+        / f'single_plots_norm_{year}_{default_opts["method"]}_{default_opts["activity_threshold"]}.pdf',
     )

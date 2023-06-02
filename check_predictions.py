@@ -17,9 +17,10 @@ tf.config.experimental.set_memory_growth(gpus[0], True)
 model_opts = ModelOptions(
     {
         "model_dir": "resources/models/",
-        "name": "DLBD",
+        "name": "DLBD_v2",
+        "model_id": "DLBD_v2",
         "class": DLBD,
-        "batch_size": 32,
+        "batch_size": 64,
         "spectrogram_overlap": 0.95,
         "inference": True,
         "random_start": False,
