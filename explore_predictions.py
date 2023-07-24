@@ -36,10 +36,10 @@ pred_files.sort()
 
 
 default_opts = {
-    "method": "direct",
-    # "method": "standard",
-    "activity_threshold": 0.75,
-    # "activity_threshold": 0.9,
+    # "method": "direct",
+    "method": "standard",
+    # "activity_threshold": 0.75,
+    "activity_threshold": 0.9,
     "min_duration": 0.4,
     "end_threshold": 0.5,
     "dtc_threshold": 0,

@@ -18,6 +18,18 @@ EVALUATORS.register_evaluator(PhenologyEvaluator)
 #%%
 
 
+cbbPalette = [
+    "#56B4E9",
+    "#E69F00",
+    # "#000000",
+    # "#4D4D4D",
+    "#009E73",
+    "#D55E00",
+    "#CC79A7",
+    "#F0E442",
+]
+
+
 models_dir = "/mnt/win/UMoncton/Doctorat/dev/phenol1/resources/models"
 
 evaluation_config_path = "config/paper_plots_config.yaml"
@@ -71,7 +83,7 @@ full_summer_plt = plot_norm_distance(
     full_summer_plt_data,
     config_utils.load_options(scenario.evaluator_opts),
     "",
-    ylab="Normalized total vocal activity\nper recording",
+    ylab="Normalized total daily vocal\nactivity",
     title="",
 )
 
@@ -86,11 +98,12 @@ full_summer_plt = (
     + scale_x_datetime(date_breaks="4 days", labels=format_date_short)
     # + ylab("Normalized total vocal activity\nper recording")
     + theme(
-        axis_title=element_text(size=14, ha="center", va="center"),
+        axis_title=element_text(size=12, ha="center", va="center"),
         legend_title=element_blank(),
-        legend_position=(0.25, 0.22),
+        legend_position=(0.3, 0.3),
         legend_direction="vertical",
-        figure_size=(7, 5),
+        figure_size=(3.5, 2.5),
+        dpi=300,
         legend_text=element_text(size=12),
         plot_margin=0.05,
     )
@@ -150,7 +163,9 @@ enab_df.type = enab_df.loc[:, "type"].cat.reorder_categories(
 enab_plt = (
     ggplot(
         data=enab_df,
-        mapping=aes("date", "trend", color="type", linetype="type"),  # , alpha="type"),
+        mapping=aes(
+            "date", "trend_norm", color="type", linetype="type"
+        ),  # , alpha="type"),
     )
     + geom_line(size=1)  # , group="type", linetype=["solid", "dashed", "solid"])
     + scale_linetype_manual(
@@ -169,15 +184,16 @@ enab_plt = (
     # )
     + scale_x_datetime(date_breaks="30 minutes", labels=format_date_short)
     + xlab("Date")
-    + ylab("Normalized total vocal activity\nper recording")
+    + ylab("Normalized total daily vocal\nactivity")
     + theme_classic()
     + theme(
-        axis_title=element_text(size=14, ha="center", va="center"),
+        axis_title=element_text(size=12, ha="center", va="center"),
         axis_text_x=element_text(angle=45),
         legend_title=element_blank(),
-        legend_position=(0.3, 0.2),
+        legend_position=(0.48, 0.3),
         legend_direction="vertical",
-        figure_size=(7, 5),
+        figure_size=(3.5, 2.5),
+        dpi=300,
         legend_text=element_text(size=12),
         plot_margin=0.05,
     )
@@ -250,11 +266,18 @@ thresh_plt = (
     + geom_line()
     # + ggtitle(plot_args.get("title", ""))
     + xlab("Date")
-    + ylab("Total daily activity per recording (s)")
+    + ylab("Total daily vocal activity (s)")
     # + scale_color_discrete(labels=["Model", "Reference"])
     + scale_x_datetime(labels=format_date_short)
+    + scale_color_manual(values=cbbPalette, guide=None)
     + theme_classic()
-    + theme(axis_text_x=element_text(angle=45))
+    + theme(
+        axis_title=element_text(size=12, ha="center", va="center"),
+        axis_text_x=element_text(angle=45),
+        figure_size=(3.5, 2.5),
+        dpi=300,
+        plot_margin=0.05,
+    )
 )
 thresh_plt
 
@@ -269,13 +292,36 @@ thresh_norm_plt = (
     + geom_line()
     # + ggtitle(plot_args.get("title", ""))
     + xlab("Date")
-    + ylab("Total daily activity per recording (s)")
+    + ylab("Normalized total daily vocal\nactivity")
+    # + labs(linetype="Threshold")
+    + scale_color_manual(values=cbbPalette, name="Threshold")
     # + scale_color_discrete(labels=["Model", "Reference"])
     + scale_x_datetime(labels=format_date_short)
     + theme_classic()
-    + theme(axis_text_x=element_text(angle=45))
+    + theme(
+        axis_title=element_text(size=12, ha="center", va="center"),
+        axis_text_x=element_text(angle=45),
+        figure_size=(3.5, 2.5),
+        dpi=300,
+        legend_text=element_text(size=12),
+        # plot_margin=0.05,
+    )
 )
 thresh_norm_plt
+
+#%%
+
+th_plt = pw.load_ggplot(thresh_plt)
+thn_plt = pw.load_ggplot(thresh_norm_plt)
+th_plt.set_index("A)")
+thn_plt.set_index("B)")
+
+
+final = th_plt | thn_plt
+
+final.savefig(
+    "/mnt/win/UMoncton/Doctorat/work/Articles/dlbd/figures/threshold_comparison.png"
+)
 
 #%%
 

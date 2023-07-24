@@ -14,22 +14,24 @@ from mouffet.utils import common_utils, file_utils
 from pandas_path import path
 from pysoundplayer.audio import Audio
 
-res_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
+res_dir = Path(".")
 events_dir = res_dir / "events"
 
-site_data = pd.read_csv(
-    "/mnt/win/UMoncton/Doctorat/data/acoustic/deployment data/sites_deployment_all.csv"
-)
+# site_data = pd.read_csv(
+#     "/mnt/win/UMoncton/Doctorat/data/acoustic/deployment data/sites_deployment_all.csv"
+# )
 
 
-get_audio = False
+get_audio = True
 
 hd_root = "/mnt/Backup/PhD/Acoustics/"
 dest_dir = res_dir / "events_to_explore"
 
-dest_event_file = file_utils.ensure_path_exists(
-    dest_dir / "events_to_explore.feather", is_file=True
-)
+# dest_event_file = file_utils.ensure_path_exists(
+#     dest_dir / "events_to_explore.csv", is_file=True
+# )
+
+dest_event_file = Path("events_to_explore.feather")
 
 nfiles = 20
 overwrite = False
@@ -91,7 +93,7 @@ def extract_recording_info_2018(df):
 
 if dest_event_file.exists():
 
-    mixed = pd.read_csv(dest_event_file)
+    mixed = pd.read_feather(dest_event_file)
 
 else:
 
@@ -136,7 +138,7 @@ else:
     all_events_df = pd.concat(all_events)
 
     mixed = all_events_df.sample(n=min(N_FILES, df.shape[0]), random_state=seed)
-    mixed.reset_index().to_feather(dest_event_file)
+    mixed.reset_index().to_feather(dest_event_file, index=False)
 
 
 if get_audio:
@@ -171,9 +173,9 @@ if get_audio:
             )
         else:
             print("Already exists skipping!")
-        total_dur += event.event_duration
-        if total_dur >= TOTAL_DURATION:
-            break
+        # total_dur += event.event_duration
+        # if total_dur >= TOTAL_DURATION:
+        #     break
         extract_nb += 1
         tmp["dest_path"] = dest_path
         tmp_res.append(tmp)

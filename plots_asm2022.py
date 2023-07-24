@@ -5,8 +5,8 @@ from pathlib import Path
 import pandas as pd
 from plotnine import *
 
-# src_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
-src_dir = Path("/mnt/win/UMoncton/Doctorat/results/predictions_v2")
+src_dir = Path("/mnt/win/UMoncton/Doctorat/dev/phenol1/results/v2")
+# src_dir = Path("/mnt/win/UMoncton/Doctorat/results/predictions_v2")
 # dest_dir = Path("/mnt/win/UMoncton/Doctorat/presentations/ArcticNet 2022/figs")
 dest_dir = src_dir / "plots"
 
@@ -100,7 +100,7 @@ print(aplt)
 
 ##* All sites 2019
 df = read_trends(src_dir / f"2018_agg_trends_{method}_{activity_threshold}.csv")
-tmp_df = df.groupby(["date", "site"]).mean().reset_index()
+tmp_df = df.loc[:, df.columns != "type"].groupby(["date", "site"]).mean().reset_index()
 tmp_df = tmp_df.loc[
     tmp_df.site.isin(["CORI", "CHUR", "ALRT", "EABA", "SVAL", "ZACK", "PBPS"])
 ].reset_index()
@@ -165,6 +165,7 @@ tmp = []
 for agg_file in src_dir.glob(f"*agg_trends_{method}_{activity_threshold}.csv"):
     year = agg_file.stem.split("_")[0]
     df = pd.read_csv(agg_file)
+    df = df.loc[:, ~df.columns.isin(["type"])]
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
     df["julian"] = df.date.dt.dayofyear
     df["year"] = int(year)
@@ -175,7 +176,7 @@ for agg_file in src_dir.glob(f"*agg_trends_{method}_{activity_threshold}.csv"):
     tmp.append(df.loc[df.site == "BARW"])
 
 tmp_df = pd.concat(tmp)
-tmp_df2 = tmp_df.copy()
+tmp_df = tmp_df.loc[:, tmp_df.columns != "site"].copy()
 tmp_df = tmp_df.groupby(["year", "julian"]).mean().reset_index()
 
 tmp_df = tmp_df.astype({"year": "category"})
